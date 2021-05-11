@@ -34,12 +34,24 @@ public class AppointmentService {
         if (!dateOfTime.isEqual(LocalDate.now())) {
             throw new IllegalArgumentException("Appointment date should be the same date of today");
         }
+        checkIfDoctorIsExist(doctorId);
+        checkForConflict(doctorId, patient, time);
 
-        Doctor doctor = doctors.stream()
-                .filter(x -> x.getId() == doctorId)
-                .findAny()
-                .orElseThrow(() -> new NullPointerException("Doctor is not found for the specified id: " + doctorId));
+        int appointmentId = generateAppointmentId();
+        Appointment appointment = Appointment.of(appointmentId, doctorId, patient.getId(), time);
+        addAppointmentTo(doctorId, appointment, doctorAppointments);
+        addAppointmentTo(patient.getId(),appointment,patientAppointments);
+        return appointment;
+    }
 
+    private void addAppointmentTo(int doctorId, Appointment appointment, Map<Integer, List<Appointment>> appointmentsMap) {
+        if (!appointmentsMap.containsKey(doctorId)) {
+            appointmentsMap.put(doctorId, new ArrayList<>());
+        }
+        appointmentsMap.get(doctorId).add(appointment);
+    }
+
+    private void checkForConflict(int doctorId, Patient patient, LocalDateTime time) {
         boolean isThereConflictForDoctor = checkConflict(doctorAppointments.get(doctorId), time);
         boolean isThereConflictForPatient = checkConflict(patientAppointments.get(patient.getId()), time);
 
@@ -50,18 +62,13 @@ public class AppointmentService {
         if (isThereConflictForPatient) {
             throw new IllegalArgumentException("You have another appointment for the specified time. Please choose another time frame");
         }
+    }
 
-        int appointmentId = generateAppointmentId();
-        Appointment appointment = Appointment.of(appointmentId, doctorId, patient.getId(), time);
-        if (!doctorAppointments.containsKey(doctorId)) {
-            doctorAppointments.put(doctorId, new ArrayList<>());
-        }
-        doctorAppointments.get(doctorId).add(appointment);
-        if (!patientAppointments.containsKey(patient.getId())) {
-            patientAppointments.put(patient.getId(), new ArrayList<>());
-        }
-        patientAppointments.get(patient.getId()).add(appointment);
-        return appointment;
+    private void checkIfDoctorIsExist(int doctorId) {
+        doctors.stream()
+                .filter(x -> x.getId() == doctorId)
+                .findAny()
+                .orElseThrow(() -> new NullPointerException("Doctor is not found for the specified id: " + doctorId));
     }
 
     private boolean checkConflict(List<Appointment> appointments, LocalDateTime time) {
