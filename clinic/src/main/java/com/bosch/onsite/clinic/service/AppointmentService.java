@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -75,8 +76,11 @@ public class AppointmentService {
         if (Objects.isNull(appointments) || appointments.size() == 0) {
             return false;
         }
+
         for (Appointment appointment : appointments) {
-            if (appointment.getTime().isEqual(time)) {
+            LocalDateTime from = appointment.getTime();
+            LocalDateTime to  = appointment.getTime().plusHours(1);
+            if (time.plusMinutes(1).isAfter(from) && time.isBefore(to)) {
                 return true;
             }
         }
