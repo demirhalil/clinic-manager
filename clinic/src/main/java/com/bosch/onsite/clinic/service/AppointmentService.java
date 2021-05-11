@@ -17,10 +17,10 @@ import java.util.*;
 public class AppointmentService {
     @Getter
     @Setter
-    private Map<Long, List<Appointment>> doctorAppointments;
+    private Map<Integer, List<Appointment>> doctorAppointments;
     @Getter
     @Setter
-    private Map<Long, List<Appointment>> patientAppointments;
+    private Map<Integer, List<Appointment>> patientAppointments;
     private final List<Doctor> doctors;
 
     public AppointmentService() throws IOException {
@@ -29,14 +29,14 @@ public class AppointmentService {
         doctorAppointments = new HashMap<>();
     }
 
-    public Appointment save(Long doctorId, Patient patient, LocalDateTime time) {
+    public Appointment save(int doctorId, Patient patient, LocalDateTime time) {
         LocalDate dateOfTime = time.toLocalDate();
         if (!dateOfTime.isEqual(LocalDate.now())) {
             throw new IllegalArgumentException("Appointment date should be the same date of today");
         }
 
         Doctor doctor = doctors.stream()
-                .filter(x -> x.getId().equals(doctorId))
+                .filter(x -> x.getId() == doctorId)
                 .findAny()
                 .orElseThrow(() -> new NullPointerException("Doctor is not found for the specified id: " + doctorId));
 
@@ -51,7 +51,7 @@ public class AppointmentService {
             throw new IllegalArgumentException("You have another appointment for the specified time. Please choose another time frame");
         }
 
-        long appointmentId = generateAppointmentId();
+        int appointmentId = generateAppointmentId();
         Appointment appointment = Appointment.of(appointmentId, doctorId, patient.getId(), time);
         if (!doctorAppointments.containsKey(doctorId)) {
             doctorAppointments.put(doctorId, new ArrayList<>());
@@ -76,7 +76,7 @@ public class AppointmentService {
         return false;
     }
 
-    private long generateAppointmentId() {
+    private int generateAppointmentId() {
         Random random = new Random();
         return random.nextInt(1 + 1000) + 1;
     }

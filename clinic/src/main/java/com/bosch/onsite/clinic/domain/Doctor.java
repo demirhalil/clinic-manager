@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(staticName = "of")
 @NoArgsConstructor(staticName = "of")
 public class Doctor {
-    private Long id;
+    private int id;
     private String name;
     private String lastName;
 }

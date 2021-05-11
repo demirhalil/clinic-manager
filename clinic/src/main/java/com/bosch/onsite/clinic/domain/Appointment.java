@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(staticName = "of")
 @AllArgsConstructor(staticName = "of")
 public class Appointment {
-    private Long id;
-    private Long doctorId;
-    private Long patientId;
+    private int id;
+    private int doctorId;
+    private int patientId;
     private LocalDateTime time;
 }

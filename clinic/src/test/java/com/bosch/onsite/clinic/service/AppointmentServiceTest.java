@@ -37,7 +37,7 @@ class AppointmentServiceTest {
 
     @Test
     void save_whenThereIsNoConflictForBothDoctorAndPatient() {
-        long doctorId = 1;
+        int doctorId = 1;
         Patient patient = initPatient(1, "Kevin", "Hard");
         LocalDateTime time = LocalDateTime.now();
         Appointment actual = appointmentService.save(doctorId, patient, time);
@@ -51,7 +51,7 @@ class AppointmentServiceTest {
 
     @Test()
     void save_whenTheTimeIsNotToday_thenThrowException() {
-        long doctorId = 1;
+        int doctorId = 1;
         LocalDateTime time =  TIME.plusDays(2);
         Patient patient = initPatient(1, "Kevin", "Hard");
         assertThrows(IllegalArgumentException.class, () -> appointmentService.save(doctorId, patient, time));
@@ -59,7 +59,7 @@ class AppointmentServiceTest {
 
     @Test
     void save_whenThereIsNoSpecifiedDoctor_thenThrowException() {
-        long doctorId = 12;
+        int doctorId = 12;
         Patient patient = initPatient(1, "Kevin", "Hard");
         LocalDateTime time = LocalDateTime.now().plusDays(2);
         assertThrows(IllegalArgumentException.class, () -> appointmentService.save(doctorId, patient, time));
@@ -68,7 +68,7 @@ class AppointmentServiceTest {
 
     @Test
     void save_whenThereIsAConflictForDoctor_thenThrowException() {
-        long doctorId = 1;
+        int doctorId = 1;
         appointmentService.setDoctorAppointments(initMockDataForAppointments(doctorId));
         assertThrows(IllegalArgumentException.class, () -> appointmentService.save(doctorId, patient, TIME));
 
@@ -76,21 +76,21 @@ class AppointmentServiceTest {
 
     @Test
     void save_whenThereIsAConflictForPatient_thenThrowException() {
-        long doctorId = 1;
+        int doctorId = 1;
         appointmentService.setPatientAppointments(initMockDataForAppointments(doctorId));
-        assertThrows(IllegalArgumentException.class, () -> appointmentService.save(2L, patient, TIME));
+        assertThrows(IllegalArgumentException.class, () -> appointmentService.save(2, patient, TIME));
 
     }
 
-    private Map<Long, List<Appointment>> initMockDataForAppointments(long id) {
-        Map<Long, List<Appointment>> appointments = new HashMap<>();
+    private Map<Integer, List<Appointment>> initMockDataForAppointments(int id) {
+        Map<Integer, List<Appointment>> appointments = new HashMap<>();
         appointments.put(id, new ArrayList<>());
-        appointments.get(id).add(Appointment.of(1L, id, patient.getId(), TIME));
+        appointments.get(id).add(Appointment.of(1, id, patient.getId(), TIME));
         return appointments;
     }
 
 
-    private Patient initPatient(long id, String name, String lastName) {
+    private Patient initPatient(int id, String name, String lastName) {
         return Patient.of(id, name, lastName);
     }
 }
